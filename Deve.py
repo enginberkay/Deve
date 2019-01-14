@@ -7,6 +7,7 @@ import Config
 import Email
 """
 Oracle script çalıştırma uygulaması
+user test
 """
 if __name__ == "__main__":
     print("###### Deve #####")
