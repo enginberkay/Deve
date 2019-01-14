@@ -5,7 +5,9 @@ import DirectoryManager
 import SqlPlus
 import Config
 import Email
-
+"""
+Oracle script çalıştırma uygulaması
+"""
 if __name__ == "__main__":
     print("###### Deve #####")
     env = Config.getEnvironment()
