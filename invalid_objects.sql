@@ -1,0 +1,1 @@
+SELECT NAME, TYPE, line, text FROM user_errors;
