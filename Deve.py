@@ -27,7 +27,7 @@ if __name__ == "__main__":
         queryResult, errorMessage = db.runScriptFiles(file)
         directory.prepareRunLog()
         directory.writeRunLog(queryResult, errorMessage, file.name)
-
+    db.getInvalidObjects(directory.OldRootDir)
     if env.upper() == 'PREPROD':
         print("## Files are copying to '9_ProdDbDeploy' Folder")
         directory.copyScriptsToProdDbFolder(files)
