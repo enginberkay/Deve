@@ -1,1 +1,1 @@
-SELECT NAME, TYPE, line, text FROM user_errors;
+SELECT NAME, TYPE, line, text FROM all_errors;
