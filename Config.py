@@ -98,6 +98,36 @@ def getEnvironment():
         x = input("Press enter to finish...")
         exit()
 
+def getWindowsUserDomain():
+    try:
+        return config['AUTHENTICATION']['DOMAIN']
+    except Exception as error:
+        ExceptionManager.WriteException(
+            str(error), "getWindowsUserDomain", exceptionFileName)
+        print(error)
+        x = input("Press enter to finish...")
+        exit()
+
+def getWindowsUserName():
+    try:
+        return config['AUTHENTICATION']['USERNAME']
+    except Exception as error:
+        ExceptionManager.WriteException(
+            str(error), "getWindowsUserName", exceptionFileName)
+        print(error)
+        x = input("Press enter to finish...")
+        exit()
+
+def getWindowsUserPassword():
+    try:
+        return config['AUTHENTICATION']['PASSWORD']
+    except Exception as error:
+        ExceptionManager.WriteException(
+            str(error), "getWindowsUserPassword", exceptionFileName)
+        print(error)
+        x = input("Press enter to finish...")
+        exit()
+
 # Preprod
 
 
