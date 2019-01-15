@@ -75,3 +75,13 @@ class Oracle:
         session.stdin.write(b"\n spool off; \n")
         session.stdin.write(b"exit;")
         queryResult, errorMessage = session.communicate()
+
+    def recompileInvalidObjects(self):
+        sqlPath = Path("./recompile_invalid_objects.sql")
+        sqlCommand = b"@" + bytes(sqlPath)
+
+        session = Popen(['sqlplus', '-S', self.__connectString],
+                        stdin=PIPE, stdout=PIPE, stderr=PIPE)
+        session.stdin.write(sqlCommand)
+        session.stdin.write(b"exit;")
+        queryResult, errorMessage = session.communicate()
