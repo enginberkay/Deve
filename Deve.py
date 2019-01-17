@@ -14,6 +14,7 @@ if __name__ == "__main__":
     print(env + " Deploy Started!")
     files = []
     directory = DirectoryManager.DirectoryManager(env)
+    directory.createDirectory(directory.OldRootDir)
     print("## Reading files")
     directory.getAllFiles(files)
     print("## Moving files to Old Folder")
@@ -27,13 +28,25 @@ if __name__ == "__main__":
         queryResult, errorMessage = db.runScriptFiles(file)
         directory.prepareRunLog()
         directory.writeRunLog(queryResult, errorMessage, file.name)
-    db.recompileInvalidObjects()
-    db.getInvalidObjects(directory.OldRootDir)
+    
     if env.upper() == 'PREPROD':
         print("## Files are copying to '9_ProdDbDeploy' Folder")
-        directory.copyScriptsToProdDbFolder(files)
+        for file in files:
+            if file.name.upper() == directory.deployPackInfo.upper():
+                continue
+            if file.name.upper() == directory.runLog.upper():
+                continue
+            directory.copyScriptToProdDbFolder(file)
         content = directory.readDeployPackInfo()
         directory.appendDeployPackInfoTo09(content)
+
+    print("Recompile Invalid Objects...")
+    db.recompileInvalidObjects()
+    db.getInvalidObjects(directory.OldRootDir)
+    invalidObjectListFile = File.File(
+        "InvalidObjects.log", directory.rootPath / "InvalidObjects.log")
+    invalidObjectListFile.spoolPath = invalidObjectListFile.path
+    files.append(invalidObjectListFile)
 
     if Config.getMailActive() == "TRUE":
         print("Email is preparing")
