@@ -69,6 +69,7 @@ class Oracle:
         session.stdin.write(b"SET WRAP OFF; \n")
         session.stdin.write(b"SET PAGESIZE 0; \n")
         session.stdin.write(b"SET LINESIZE 32000; \n")
+        session.stdin.write(b"set trimspool on; \n")
         session.stdin.write(bytes(spoolPath,"utf-8"))
         sqlCommand = b"@" + bytes(sqlPath)
         session.stdin.write(sqlCommand)
