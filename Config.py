@@ -1,5 +1,6 @@
 import configparser
 import ExceptionManager
+import os
 
 config = configparser.ConfigParser()
 config.read('config.ini')
@@ -14,7 +15,7 @@ def getRootDirectory():
             str(error), "getRootDirectory", exceptionFileName)
         print(error)
         x = input("Press enter to finish...")
-        exit()
+        os._exit(1)
 
 
 def getOldDirectory():
@@ -25,7 +26,7 @@ def getOldDirectory():
             str(error), "getOldDirectory", exceptionFileName)
         print(error)
         x = input("Press enter to finish...")
-        exit()
+        os._exit(1)
 
 
 def getDbConnectionString():
@@ -38,7 +39,7 @@ def getDbConnectionString():
             str(error), "getDbConnectionString", exceptionFileName)
         print(error)
         x = input("Press enter to finish...")
-        exit()
+        os._exit(1)
     return str(userName + "/" + password + "@" + tnsName)
 
 # Mail
@@ -52,7 +53,7 @@ def getMailActive():
             str(error), "getMailRequired", exceptionFileName)
         print(error)
         x = input("Press enter to finish...")
-        exit()
+        os._exit(1)
 
 
 def getMailFrom():
@@ -63,7 +64,7 @@ def getMailFrom():
             str(error), "getMailFrom", exceptionFileName)
         print(error)
         x = input("Press enter to finish...")
-        exit()
+        os._exit(1)
 
 
 def getMailTo():
@@ -74,7 +75,7 @@ def getMailTo():
             str(error), "getMailTo", exceptionFileName)
         print(error)
         x = input("Press enter to finish...")
-        exit()
+        os._exit(1)
 
 
 def getMailPassword():
@@ -85,7 +86,7 @@ def getMailPassword():
             str(error), "getMailPassword", exceptionFileName)
         print(error)
         x = input("Press enter to finish...")
-        exit()
+        os._exit(1)
 
 
 def getEnvironment():
@@ -96,7 +97,7 @@ def getEnvironment():
             str(error), "getEnvironment", exceptionFileName)
         print(error)
         x = input("Press enter to finish...")
-        exit()
+        os._exit(1)
 
 def getWindowsUserDomain():
     try:
@@ -106,7 +107,17 @@ def getWindowsUserDomain():
             str(error), "getWindowsUserDomain", exceptionFileName)
         print(error)
         x = input("Press enter to finish...")
-        exit()
+        os._exit(1)
+
+def isRequiredUserLogin():
+    try:
+        return config['AUTHENTICATION']['IS_REQUIRED']
+    except Exception as error:
+        ExceptionManager.WriteException(
+            str(error), "getWindowsUserName", exceptionFileName)
+        print(error)
+        x = input("Press enter to finish...")
+        os._exit(1)
 
 def getWindowsUserName():
     try:
@@ -116,7 +127,7 @@ def getWindowsUserName():
             str(error), "getWindowsUserName", exceptionFileName)
         print(error)
         x = input("Press enter to finish...")
-        exit()
+        os._exit(1)
 
 def getWindowsUserPassword():
     try:
@@ -126,7 +137,7 @@ def getWindowsUserPassword():
             str(error), "getWindowsUserPassword", exceptionFileName)
         print(error)
         x = input("Press enter to finish...")
-        exit()
+        os._exit(1)
 
 # Preprod
 
@@ -139,4 +150,4 @@ def getProdDbDeployPath():
             str(error), "getProdDbDeployPath", exceptionFileName)
         print(error)
         x = input("Press enter to finish...")
-        exit()
+        os._exit(1)
