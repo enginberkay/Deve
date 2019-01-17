@@ -113,11 +113,8 @@ def isRequiredUserLogin():
     try:
         return config['AUTHENTICATION']['IS_REQUIRED']
     except Exception as error:
-        ExceptionManager.WriteException(
-            str(error), "getWindowsUserName", exceptionFileName)
-        print(error)
-        x = input("Press enter to finish...")
-        os._exit(1)
+        print("User Login is not required!")
+        return "FALSE"
 
 def getWindowsUserName():
     try:
