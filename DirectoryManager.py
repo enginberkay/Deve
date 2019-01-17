@@ -95,14 +95,12 @@ class DirectoryManager:
     def getProdDbDeployPath(self):
         return Path(Config.getProdDbDeployPath())
 
-    def copyScriptsToProdDbFolder(self, files):
-        for file in files:
-            if file.name.upper() == self.deployPackInfo.upper():
-                continue
-            if file.name.upper() == self.runLog.upper():
-                continue
-            self.copy(file.path, self.prodDbDeployPath)
-            file.path = self.OldRootDir.resolve() / file.name
+    def copyScriptToProdDbFolder(self, file):
+        self.copy(file.path, self.prodDbDeployPath)
+        file.path = self.OldRootDir.resolve() / file.name
+    
+    def copyDeployPackInfoTo09(self):
+        self.copy(self.rootPath / self.deployPackInfo, self.prodDbDeployPath)
 
     def copy(self, source, destination):
         try:
@@ -111,6 +109,16 @@ class DirectoryManager:
         except Exception as error:
             ExceptionManager.WriteException(
                 str(error), "copy", exceptionFileName)
+
+    def removeSpool(self, file):
+        self.remove(file.spoolPath)
+
+    def remove(self, path):
+        try:
+            os.remove(path)
+        except Exception as error:
+            ExceptionManager.WriteException(
+                str(error), "remove", exceptionFileName)
 
     def readDeployPackInfo(self):
         read_data = ''

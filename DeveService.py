@@ -4,18 +4,21 @@ import File
 import DirectoryManager
 import SqlPlus
 import Config
-import Authenticate as Auth
+import AuthenticationManager
 import Email
 # import Email
 from flask import Flask, jsonify, request
 
 app = Flask(__name__)
-AuthenticationManager = Auth.ImpersonateWin32Sec()
 
-@app.route('/autodeploy/<string:environment>', methods=['GET'])
-def autodeploy(environment):
-    AuthenticationManager.logonUser()
+
+@app.route('/autodeploy/<string:environment>/<string:email>/<string:changesetfiles>', methods=['GET'])
+def autodeploy(environment,email, changesetfiles):
+    if Config.isRequiredUserLogin() == "TRUE":
+        Auth = AuthenticationManager.AccountImpersonate()
+        Auth.logonUser()
     files = []
+    scriptToExecute = changesetfiles.split('!')
     directory = DirectoryManager.DirectoryManager(environment)
     directory.getAllFiles(files)
     directory.prepareSpoolPath(files)
@@ -23,28 +26,57 @@ def autodeploy(environment):
     for file in files:
         if file.name.upper() == directory.deployPackInfo.upper():
             continue
-        db.runScriptFiles(file)
+        for scriptName in scriptToExecute:
+            if scriptName == file.name:
+                db.runScriptFiles(file)
+    db.recompileInvalidObjects()
+    db.getInvalidObjects(directory.OldRootDir)
     # Preprod İşlemleri
     if environment == "PREPROD":
-        directory.copyScriptsToProdDbFolder(files)
-        content = directory.readDeployPackInfo()
-        directory.appendDeployPackInfoTo09(content)
-
-    if Config.getMailActive() == "TRUE":
-        print("Email is preparing")
-        email = Email.Email(None)
         for file in files:
             if file.name.upper() == directory.deployPackInfo.upper():
                 continue
             if file.name.upper() == directory.runLog.upper():
                 continue
-            email.attach(file)
-        if email.sendmail("Test"):
-            print("Email sent")
-        else:
-            print("Email couldn't send")
+            for scriptName in scriptToExecute:
+                if scriptName == file.name:
+                    directory.copyScriptToProdDbFolder(file)
+        directory.copyDeployPackInfoTo09()
 
-    AuthenticationManager.logoffUser()
+    print("Email is preparing")
+    email = Email.Email(email)
+    for file in files:
+        if file.name.upper() == directory.deployPackInfo.upper():
+            continue
+        if file.name.upper() == directory.runLog.upper():
+            continue
+        for scriptName in scriptToExecute:
+            if scriptName == file.name:
+                email.attach(file)
+    if email.sendmail(environment):
+        print("Email sent")
+    else:
+        print("Email couldn't send")
+
+    for file in files:
+        if file.name.upper() == directory.deployPackInfo.upper():
+            continue
+        if file.name.upper() == directory.runLog.upper():
+            continue
+        for scriptName in scriptToExecute:
+            if scriptName == file.name:
+                directory.removeSpool(file)
+    
+    if Config.isRequiredUserLogin() == "TRUE":
+        Auth.logoffUser()
+    return jsonify({'result': 'OK'})
+
+
+@app.route('/print/<string:files>', methods=['GET'])
+def p(files):
+    fileList = files.split('!')
+    for f in fileList:
+        print(f)
     return jsonify({'result': 'OK'})
 
 
