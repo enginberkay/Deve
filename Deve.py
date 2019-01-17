@@ -14,6 +14,7 @@ if __name__ == "__main__":
     print(env + " Deploy Started!")
     files = []
     directory = DirectoryManager.DirectoryManager(env)
+    directory.createDirectory(directory.OldRootDir)
     print("## Reading files")
     directory.getAllFiles(files)
     print("## Moving files to Old Folder")

@@ -18,7 +18,6 @@ class DirectoryManager:
         self.rootPath = Path(self.getRootDirectory())
         # Old klasör yapısı
         self.OldRootDir = self.getOldRootDirectory()
-        self.createDirectory(self.OldRootDir)
         
         # Preprod
         self.env = environtment
@@ -97,7 +96,7 @@ class DirectoryManager:
 
     def copyScriptToProdDbFolder(self, file):
         self.copy(file.path, self.prodDbDeployPath)
-        file.path = self.OldRootDir.resolve() / file.name
+        file.path = self.prodDbDeployPath.resolve() / file.name
     
     def copyDeployPackInfoTo09(self):
         self.copy(self.rootPath / self.deployPackInfo, self.prodDbDeployPath)

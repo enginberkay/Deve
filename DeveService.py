@@ -13,7 +13,7 @@ app = Flask(__name__)
 
 
 @app.route('/autodeploy/<string:environment>/<string:email>/<string:changesetfiles>', methods=['GET'])
-def autodeploy(environment,email, changesetfiles):
+def autodeploy(environment, email, changesetfiles):
     if Config.isRequiredUserLogin() == "TRUE":
         Auth = AuthenticationManager.AccountImpersonate()
         Auth.logonUser()
@@ -25,34 +25,33 @@ def autodeploy(environment,email, changesetfiles):
     db = SqlPlus.Oracle()
     for file in files:
         if file.name.upper() == directory.deployPackInfo.upper():
-            continue
+            files.remove(file)
+    for file in files:
         for scriptName in scriptToExecute:
             if scriptName == file.name:
                 db.runScriptFiles(file)
-    db.recompileInvalidObjects()
-    db.getInvalidObjects(directory.OldRootDir)
+
     # Preprod İşlemleri
     if environment == "PREPROD":
         for file in files:
-            if file.name.upper() == directory.deployPackInfo.upper():
-                continue
-            if file.name.upper() == directory.runLog.upper():
-                continue
             for scriptName in scriptToExecute:
                 if scriptName == file.name:
                     directory.copyScriptToProdDbFolder(file)
         directory.copyDeployPackInfoTo09()
 
+    db.recompileInvalidObjects()
+    db.getInvalidObjects(directory.rootPath)
+    invalidObjectListFile = File.File(
+        "InvalidObjects.log", directory.rootPath / "InvalidObjects.log")
+    invalidObjectListFile.spoolPath = invalidObjectListFile.path
+
     print("Email is preparing")
     email = Email.Email(email)
     for file in files:
-        if file.name.upper() == directory.deployPackInfo.upper():
-            continue
-        if file.name.upper() == directory.runLog.upper():
-            continue
         for scriptName in scriptToExecute:
             if scriptName == file.name:
                 email.attach(file)
+    email.attach(invalidObjectListFile)
     if email.sendmail(environment):
         print("Email sent")
     else:
@@ -66,7 +65,7 @@ def autodeploy(environment,email, changesetfiles):
         for scriptName in scriptToExecute:
             if scriptName == file.name:
                 directory.removeSpool(file)
-    
+    directory.removeSpool(invalidObjectListFile)
     if Config.isRequiredUserLogin() == "TRUE":
         Auth.logoffUser()
     return jsonify({'result': 'OK'})
