@@ -6,7 +6,7 @@ import SqlPlus
 import Config
 import AuthenticationManager
 import Email
-# import Email
+import ExceptionManager
 from flask import Flask, jsonify, request
 
 app = Flask(__name__)
@@ -45,7 +45,6 @@ def autodeploy(environment, email, changesetfiles):
         "InvalidObjects.log", directory.rootPath / "InvalidObjects.log")
     invalidObjectListFile.spoolPath = invalidObjectListFile.path
 
-    print("Email is preparing")
     email = Email.Email(email)
     for file in files:
         for scriptName in scriptToExecute:
@@ -53,9 +52,10 @@ def autodeploy(environment, email, changesetfiles):
                 email.attach(file)
     email.attach(invalidObjectListFile)
     if email.sendmail(environment):
-        print("Email sent")
+        None
     else:
-        print("Email couldn't send")
+        ExceptionManager.WriteException(
+            "Could not send e-mail", "Email", "DeveService.py")
 
     for file in files:
         if file.name.upper() == directory.deployPackInfo.upper():
