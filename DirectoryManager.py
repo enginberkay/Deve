@@ -73,7 +73,7 @@ class DirectoryManager:
     def prepareRunLog(self):
         try:
             with open(self.OldRootDir.resolve() / self.runLog, "a+") as f:
-                f.write("Versiyon: 0.2.1")
+                f.write("Versiyon: 0.2.5")
             f.close()
         except Exception as error:
             ExceptionManager.WriteException(
