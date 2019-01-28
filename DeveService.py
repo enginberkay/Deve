@@ -11,6 +11,8 @@ from flask import Flask, jsonify, request
 
 app = Flask(__name__)
 
+def getPathModifiedDate(el):
+    return Path(el.path).stat().st_mtime
 
 @app.route('/autodeploy/<string:environment>/<string:email>/<string:changesetfiles>', methods=['GET'])
 def autodeploy(environment, email, changesetfiles):
@@ -21,6 +23,8 @@ def autodeploy(environment, email, changesetfiles):
     scriptToExecute = changesetfiles.split('!')
     directory = DirectoryManager.DirectoryManager(environment)
     directory.getAllFiles(files)
+    # Sort files by modified date
+    files.sort(key=getPathModifiedDate)
     directory.prepareSpoolPath(files)
     db = SqlPlus.Oracle()
     for file in files:

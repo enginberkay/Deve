@@ -8,6 +8,10 @@ import Email
 """
 Oracle script çalıştırma uygulaması
 """
+
+def getPathModifiedDate(el):
+    return Path(el.path).stat().st_mtime
+
 if __name__ == "__main__":
     print("###### Deve #####")
     env = Config.getEnvironment()
@@ -17,6 +21,8 @@ if __name__ == "__main__":
     directory.createDirectory(directory.OldRootDir)
     print("## Reading files")
     directory.getAllFiles(files)
+    # Sort files by modified date
+    files.sort(key=getPathModifiedDate)
     print("## Moving files to Old Folder")
     directory.moveScriptsToOldFolder(files)
     directory.prepareSpoolPath(files)
