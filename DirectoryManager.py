@@ -11,19 +11,22 @@ exceptionFileName = "Directory.py"
 
 class DirectoryManager:
 
-    def __init__(self, environtment):
+    def __init__(self, environment):
         self.deployPackInfo = 'DeployPackInfo.log'
         self.runLog = 'Run.log'
+        self.preparePaths(environment)
+
+    def preparePaths(self, environment):
         # Root Path
-        self.rootPath = Path(self.getRootDirectory())
+        self.scriptFolder = Path(self.getScriptFolderDirectory(environment))
         # Old klasör yapısı
-        self.OldRootDir = self.getOldRootDirectory()
-        
+        self.OldFolder = self.getOldFolderDirectory(environment)
+
         # Preprod
-        self.env = environtment
+        self.env = environment
         if self.env.upper() == 'PREPROD':
             self.prodDbDeployPath = self.getProdDbDeployPath()
-            self.packInfoFromDbFolder = self.OldRootDir / self.deployPackInfo
+            self.packInfoFromDbFolder = self.OldFolder / self.deployPackInfo
             self.packInfoFromProdDbDeploy = self.prodDbDeployPath / self.deployPackInfo
 
     @staticmethod
@@ -46,16 +49,16 @@ class DirectoryManager:
             ExceptionManager.WriteException(
                 str(error), "move", exceptionFileName)
 
-    def getRootDirectory(self):
-        return Path(Config.getRootDirectory())
+    def getScriptFolderDirectory(self, environment):
+        return Path(Config.getScriptFolderDirectory(environment))
 
-    def getOldRootDirectory(self):
-        oldDirectory = Path(Config.getOldDirectory())
+    def getOldFolderDirectory(self, environment):
+        oldDirectory = Path(Config.getOldFolderDirectory(environment))
         oldDirectory = oldDirectory / self.getDateWithTime()
         return oldDirectory
 
     def getAllFiles(self, files):
-        for (l_dirpath, l_dirnames, l_filenames) in os.walk(self.rootPath):
+        for (l_dirpath, l_dirnames, l_filenames) in os.walk(self.scriptFolder):
             if l_filenames:
                 for fileName in l_filenames:
                     filePath = Path(Path(l_dirpath).resolve(), fileName)
@@ -63,25 +66,26 @@ class DirectoryManager:
 
     def moveScriptsToOldFolder(self, files):
         for file in files:
-            self.move(file.path, self.OldRootDir)
-            file.path = self.OldRootDir.resolve() / file.name
+            self.move(file.path, self.OldFolder)
+            file.path = self.OldFolder.resolve() / file.name
 
-    def prepareSpoolPath(self, files):
+    def prepareSpoolPath(self, files, target):
         for file in files:
-            file.spoolPath = file.path.with_suffix('.log')
+            file.spoolPath = Path(target) / file.name
+            file.spoolPath = file.spoolPath.with_suffix('.log')
 
-    def prepareRunLog(self):
+    def prepareRunLog(self, target):
         try:
-            with open(self.OldRootDir.resolve() / self.runLog, "a+") as f:
+            with open(target.resolve() / self.runLog, "a+") as f:
                 f.write("Versiyon: 0.2.5")
             f.close()
         except Exception as error:
             ExceptionManager.WriteException(
                 str(error), "writeRunLog", exceptionFileName)
 
-    def writeRunLog(self, queryResult, errorMessage, fileName):
+    def writeRunLog(self, queryResult, errorMessage, fileName, target):
         try:
-            with open(self.OldRootDir.resolve() / self.runLog, "a+") as f:
+            with open(target.resolve() / self.runLog, "a+") as f:
                 f.write("\n")
                 f.write("-----------------\n")
                 f.write(fileName + " - " + str(queryResult))
@@ -97,9 +101,9 @@ class DirectoryManager:
     def copyScriptToProdDbFolder(self, file):
         self.copy(file.path, self.prodDbDeployPath)
         file.path = self.prodDbDeployPath.resolve() / file.name
-    
+
     def copyDeployPackInfoTo09(self):
-        self.copy(self.rootPath / self.deployPackInfo, self.prodDbDeployPath)
+        self.copy(self.scriptFolder / self.deployPackInfo, self.prodDbDeployPath)
 
     def copy(self, source, destination):
         try:

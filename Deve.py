@@ -2,15 +2,17 @@ import sys
 from pathlib import Path
 import File
 import DirectoryManager
-import SqlPlus
+import DbManager
 import Config
 import Email
 """
 Oracle script çalıştırma uygulaması
 """
 
+
 def getPathModifiedDate(el):
     return Path(el.path).stat().st_mtime
+
 
 if __name__ == "__main__":
     print("###### Deve #####")
@@ -18,23 +20,23 @@ if __name__ == "__main__":
     print(env + " Deploy Started!")
     files = []
     directory = DirectoryManager.DirectoryManager(env)
-    directory.createDirectory(directory.OldRootDir)
+    directory.createDirectory(directory.OldFolder)
     print("## Reading files")
     directory.getAllFiles(files)
     # Sort files by modified date
     files.sort(key=getPathModifiedDate)
     print("## Moving files to Old Folder")
     directory.moveScriptsToOldFolder(files)
-    directory.prepareSpoolPath(files)
-    db = SqlPlus.Oracle()
+    directory.prepareSpoolPath(files, directory.OldFolder)
+    db = DbManager.Oracle(env)
     for file in files:
         if file.name.upper() == directory.deployPackInfo.upper():
             continue
         print("Executing File: ", file.name)
         queryResult, errorMessage = db.runScriptFiles(file)
-        directory.prepareRunLog()
-        directory.writeRunLog(queryResult, errorMessage, file.name)
-    
+        directory.prepareRunLog(directory.OldFolder)
+        directory.writeRunLog(queryResult, errorMessage, file.name, directory.OldFolder)
+
     if env.upper() == 'PREPROD':
         print("## Files are copying to '9_ProdDbDeploy' Folder")
         for file in files:
@@ -48,9 +50,9 @@ if __name__ == "__main__":
 
     print("Recompile Invalid Objects...")
     db.recompileInvalidObjects()
-    db.getInvalidObjects(directory.OldRootDir)
+    db.getInvalidObjects(Path(directory.OldFolder))
     invalidObjectListFile = File.File(
-        "InvalidObjects.log", directory.rootPath / "InvalidObjects.log")
+        "InvalidObjects.log", directory.OldFolder / "InvalidObjects.log")
     invalidObjectListFile.spoolPath = invalidObjectListFile.path
     files.append(invalidObjectListFile)
 

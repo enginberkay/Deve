@@ -7,7 +7,8 @@ exceptionFileName = "SQLPlus.py"
 
 
 class Oracle:
-    __connectString = Config.getDbConnectionString()
+    def __init__(self, environtment):
+        self.__connectString = Config.getDbConnectionString(environtment)
 
     def runScriptFiles(self, file):
         try:
@@ -43,6 +44,8 @@ class Oracle:
         except Exception as error:
             ExceptionManager.WriteException(
                 str(error), "__runSqlQuery", exceptionFileName)
+            queryResult = ''
+            errorMessage = ''
         return queryResult, errorMessage
 
     def __stringParse(self, queryResult):
@@ -62,8 +65,7 @@ class Oracle:
 
     def getInvalidObjects(self, path):
         spoolPath = "spool " + str(path.resolve() / "InvalidObjects.log") + "; \n"
-        sqlPath = Path("./invalid_objects.sql")
-
+        
         session = Popen(['sqlplus', '-S', self.__connectString],
                         stdin=PIPE, stdout=PIPE, stderr=PIPE)
         session.stdin.write(b"SET WRAP OFF; \n")
@@ -71,18 +73,16 @@ class Oracle:
         session.stdin.write(b"SET LINESIZE 32000; \n")
         session.stdin.write(b"set trimspool on; \n")
         session.stdin.write(bytes(spoolPath,"utf-8"))
-        sqlCommand = b"@" + bytes(sqlPath)
-        session.stdin.write(sqlCommand)
+        session.stdin.write(b"SELECT OWNER, NAME, TYPE, LINE, TEXT FROM ALL_ERRORS;")
         session.stdin.write(b"\n spool off; \n")
         session.stdin.write(b"exit;")
         queryResult, errorMessage = session.communicate()
 
     def recompileInvalidObjects(self):
         sqlPath = Path("./recompile_invalid_objects.sql")
-        sqlCommand = b"@" + bytes(sqlPath)
-
+        
         session = Popen(['sqlplus', '-S', self.__connectString],
                         stdin=PIPE, stdout=PIPE, stderr=PIPE)
-        session.stdin.write(sqlCommand)
+        session.stdin.write(b"exec dbms_utility.compile_schema(schema => null, compile_all => false);")
         session.stdin.write(b"exit;")
         queryResult, errorMessage = session.communicate()

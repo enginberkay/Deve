@@ -2,7 +2,7 @@ import sys
 from pathlib import Path
 import File
 import DirectoryManager
-import SqlPlus
+import DbManager
 import Config
 import AuthenticationManager
 import Email
@@ -11,8 +11,10 @@ from flask import Flask, jsonify, request
 
 app = Flask(__name__)
 
+
 def getPathModifiedDate(el):
     return Path(el.path).stat().st_mtime
+
 
 @app.route('/autodeploy/<string:environment>/<string:email>/<string:changesetfiles>', methods=['GET'])
 def autodeploy(environment, email, changesetfiles):
@@ -20,20 +22,23 @@ def autodeploy(environment, email, changesetfiles):
         Auth = AuthenticationManager.AccountImpersonate()
         Auth.logonUser()
     files = []
+    spoolsFolder = Path(Config.getSpoolsFolder(environment))
     scriptToExecute = changesetfiles.split('!')
     directory = DirectoryManager.DirectoryManager(environment)
     directory.getAllFiles(files)
     # Sort files by modified date
     files.sort(key=getPathModifiedDate)
-    directory.prepareSpoolPath(files)
-    db = SqlPlus.Oracle()
+    directory.prepareSpoolPath(files, spoolsFolder)
+    db = DbManager.Oracle(environment)
     for file in files:
         if file.name.upper() == directory.deployPackInfo.upper():
             files.remove(file)
     for file in files:
         for scriptName in scriptToExecute:
             if scriptName == file.name:
-                db.runScriptFiles(file)
+                queryResult, errorMessage = db.runScriptFiles(file)
+                # directory.prepareRunLog(spoolsFolder)
+                # directory.writeRunLog(queryResult, errorMessage, file.name, spoolsFolder)
 
     # Preprod İşlemleri
     if environment == "PREPROD":
@@ -44,11 +49,10 @@ def autodeploy(environment, email, changesetfiles):
         directory.copyDeployPackInfoTo09()
 
     db.recompileInvalidObjects()
-    db.getInvalidObjects(directory.rootPath)
+    db.getInvalidObjects(spoolsFolder)
     invalidObjectListFile = File.File(
-        "InvalidObjects.log", directory.rootPath / "InvalidObjects.log")
+        "InvalidObjects.log", spoolsFolder / "InvalidObjects.log")
     invalidObjectListFile.spoolPath = invalidObjectListFile.path
-
     email = Email.Email(email)
     for file in files:
         for scriptName in scriptToExecute:
@@ -60,7 +64,8 @@ def autodeploy(environment, email, changesetfiles):
     else:
         ExceptionManager.WriteException(
             "Could not send e-mail", "Email", "DeveService.py")
-
+    if Config.isRequiredUserLogin() == "TRUE":
+        Auth.logoffUser()
     for file in files:
         if file.name.upper() == directory.deployPackInfo.upper():
             continue
@@ -70,8 +75,7 @@ def autodeploy(environment, email, changesetfiles):
             if scriptName == file.name:
                 directory.removeSpool(file)
     directory.removeSpool(invalidObjectListFile)
-    if Config.isRequiredUserLogin() == "TRUE":
-        Auth.logoffUser()
+    
     return jsonify({'result': 'OK'})
 
 
@@ -84,4 +88,4 @@ def p(files):
 
 
 if __name__ == '__main__':
-    app.run(host='127.0.0.1', port=5002)
+    app.run(host='0.0.0.0', port=5002)

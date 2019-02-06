@@ -7,9 +7,12 @@ config.read('config.ini')
 exceptionFileName = "Config.py"
 
 
-def getRootDirectory():
+def getScriptFolderDirectory(environment):
     try:
-        return config['DIRECTORY']['ROOTDIR']
+        if environment == 'TEST':
+            return config['DIRECTORY_TEST']['SCRIPT_FOLDER']
+        elif environment == 'PREPROD':
+            return config['DIRECTORY_PREPROD']['SCRIPT_FOLDER']
     except Exception as error:
         ExceptionManager.WriteException(
             str(error), "getRootDirectory", exceptionFileName)
@@ -18,9 +21,12 @@ def getRootDirectory():
         os._exit(1)
 
 
-def getOldDirectory():
+def getOldFolderDirectory(environment):
     try:
-        return config['DIRECTORY']['OLDDIR']
+        if environment == 'TEST':
+            return config['DIRECTORY_TEST']['OLD_FOLDER_DIR']
+        elif environment == 'PREPROD':
+            return config['DIRECTORY_PREPROD']['OLD_FOLDER_DIR']
     except Exception as error:
         ExceptionManager.WriteException(
             str(error), "getOldDirectory", exceptionFileName)
@@ -29,11 +35,16 @@ def getOldDirectory():
         os._exit(1)
 
 
-def getDbConnectionString():
+def getDbConnectionString(environment):
     try:
-        userName = config['DATABASE']['USERNAME']
-        password = config['DATABASE']['PASSWORD']
-        tnsName = config['DATABASE']['TNSNAME']
+        if environment == 'TEST':
+            userName = config['DATABASE_TEST']['USERNAME']
+            password = config['DATABASE_TEST']['PASSWORD']
+            tnsName = config['DATABASE_TEST']['TNSNAME']
+        elif environment == 'PREPROD':
+            userName = config['DATABASE_PREPROD']['USERNAME']
+            password = config['DATABASE_PREPROD']['PASSWORD']
+            tnsName = config['DATABASE_PREPROD']['TNSNAME']
     except Exception as error:
         ExceptionManager.WriteException(
             str(error), "getDbConnectionString", exceptionFileName)
@@ -41,6 +52,35 @@ def getDbConnectionString():
         x = input("Press enter to finish...")
         os._exit(1)
     return str(userName + "/" + password + "@" + tnsName)
+
+
+# Preprod
+
+
+def getProdDbDeployPath():
+    try:
+        return config['DIRECTORY_PREPROD']['PRODDBDEPLOY']
+    except Exception as error:
+        ExceptionManager.WriteException(
+            str(error), "getProdDbDeployPath", exceptionFileName)
+        print(error)
+        x = input("Press enter to finish...")
+        os._exit(1)
+# VZX
+
+
+def getSpoolsFolder(environment):
+    try:
+        if environment == 'TEST':
+            return config['DIRECTORY_TEST']['SPOOLS']
+        elif environment == 'PREPROD':
+            return config['DIRECTORY_PREPROD']['SPOOLS']
+    except Exception as error:
+        ExceptionManager.WriteException(
+            str(error), "getProdDbDeployPath", exceptionFileName)
+        print(error)
+        x = input("Press enter to finish...")
+        os._exit(1)
 
 # Mail
 
@@ -99,6 +139,7 @@ def getEnvironment():
         x = input("Press enter to finish...")
         os._exit(1)
 
+
 def getWindowsUserDomain():
     try:
         return config['AUTHENTICATION']['DOMAIN']
@@ -109,12 +150,14 @@ def getWindowsUserDomain():
         x = input("Press enter to finish...")
         os._exit(1)
 
+
 def isRequiredUserLogin():
     try:
         return config['AUTHENTICATION']['IS_REQUIRED']
     except Exception as error:
         print("User Login is not required!")
         return "FALSE"
+
 
 def getWindowsUserName():
     try:
@@ -126,25 +169,13 @@ def getWindowsUserName():
         x = input("Press enter to finish...")
         os._exit(1)
 
+
 def getWindowsUserPassword():
     try:
         return config['AUTHENTICATION']['PASSWORD']
     except Exception as error:
         ExceptionManager.WriteException(
             str(error), "getWindowsUserPassword", exceptionFileName)
-        print(error)
-        x = input("Press enter to finish...")
-        os._exit(1)
-
-# Preprod
-
-
-def getProdDbDeployPath():
-    try:
-        return config['DIRECTORY']['PRODDBDEPLOY']
-    except Exception as error:
-        ExceptionManager.WriteException(
-            str(error), "getProdDbDeployPath", exceptionFileName)
         print(error)
         x = input("Press enter to finish...")
         os._exit(1)
