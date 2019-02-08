@@ -86,5 +86,5 @@ class Oracle:
         session = Popen(['sqlplus', '-S', self.__connectString],
                         stdin=PIPE, stdout=PIPE, stderr=PIPE)
         session.stdin.write(bytes(query, 'UTF-8'))
-        session.stdin.write(b"exit;")
+        session.stdin.write(b" \n exit;")
         queryResult, errorMessage = session.communicate()
