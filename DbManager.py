@@ -35,6 +35,7 @@ class Oracle:
             sqlplus = 'sqlplus ' + '-S ' + self.__connectString + ' \n'
             session.stdin.write(bytes(sqlplus, "utf-8"))
             session.stdin.write(b" SET  DEFINE  OFF; \n")
+            session.stdin.write(b" SET  SQLBLANKLINES OFF; \n")
             spool = "spool " + spoolPath + "; \n"
             session.stdin.write(bytes(spool, "utf-8"))
             session.stdin.write(sqlCommand)
