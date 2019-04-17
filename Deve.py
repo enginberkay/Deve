@@ -1,25 +1,30 @@
-import sys
 from pathlib import Path
 import File
 import DirectoryManager
 import DbManager
 import Config
 import Email
+import sys
+
+
 """
 Oracle script çalıştırma uygulaması
 """
 
-
 def getPathModifiedDate(el):
     return Path(el.path).stat().st_mtime
-
+       
 
 if __name__ == "__main__":
+   
+  
     print("###### Deve #####")
-    env = Config.getEnvironment()
+    config=Config.Config(sys.argv)
+    env = config.getEnvironment()
+
     print(env + " Deploy Started!")
     files = []
-    directory = DirectoryManager.DirectoryManager(env)
+    directory = DirectoryManager.DirectoryManager(env, config)
     directory.createDirectory(directory.OldFolder)
     print("## Reading files")
     directory.getAllFiles(files)
@@ -28,7 +33,7 @@ if __name__ == "__main__":
     print("## Moving files to Old Folder")
     directory.moveScriptsToOldFolder(files)
     directory.prepareSpoolPath(files, directory.OldFolder)
-    db = DbManager.Oracle(env)
+    db = DbManager.Oracle(env, config)
     for file in files:
         if file.name.upper() == directory.deployPackInfo.upper():
             continue
@@ -56,17 +61,5 @@ if __name__ == "__main__":
     invalidObjectListFile.spoolPath = invalidObjectListFile.path
     files.append(invalidObjectListFile)
 
-    if Config.getMailActive() == "TRUE":
-        print("Email is preparing")
-        email = Email.Email(None)
-        for file in files:
-            if file.name.upper() == directory.deployPackInfo.upper():
-                continue
-            if file.name.upper() == directory.runLog.upper():
-                continue
-            email.attach(file)
-        if email.sendmail("Test"):
-            print("Email sent")
-        else:
-            print("Email couldn't send")
+    
     x = input("Please, press enter to finish...")

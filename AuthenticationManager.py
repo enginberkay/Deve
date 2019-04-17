@@ -8,10 +8,10 @@ exceptionFileName = "AuthenticationManager.py"
 
 class AccountImpersonate:
 
-    def __init__(self):
-        self.domain = Config.getWindowsUserDomain()
-        self.username = Config.getWindowsUserName()
-        self.password = Config.getWindowsUserPassword()
+    def __init__(self, config):
+        self.domain = config.getWindowsUserDomain()
+        self.username = config.getWindowsUserName()
+        self.password = config.getWindowsUserPassword()
 
     def logonUser(self):
         try:

@@ -8,8 +8,9 @@ exceptionFileName = "SQLPlus.py"
 
 
 class Oracle:
-    def __init__(self, environtment):
-        self.__connectString = Config.getDbConnectionString(environtment)
+    
+    def __init__(self, environment, config):
+        self.__connectString = config.getDbConnectionString(environment)
 
     def runScriptFiles(self, file):
         try:
