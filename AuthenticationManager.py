@@ -18,7 +18,7 @@ class AccountImpersonate:
             self.handel = win32security.LogonUser(
                 self.username, self.domain, self.password, win32con.LOGON32_LOGON_INTERACTIVE, win32con.LOGON32_PROVIDER_DEFAULT)
             win32security.ImpersonateLoggedOnUser(self.handel)
-        except Win32Exception as e:
+        except error.Win32Exception as e:
             ExceptionManager.WriteException(
                 e.strerror, "logonUser", exceptionFileName)
             exit()
@@ -30,7 +30,7 @@ class AccountImpersonate:
         try:
             win32security.RevertToSelf()
             self.handel.Close()
-        except Win32Exception as e:
+        except error.Win32Exception as e:
             ExceptionManager.WriteException(
                 e.strerror, "logoffUser", exceptionFileName)
             exit()
