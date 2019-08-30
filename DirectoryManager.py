@@ -5,14 +5,13 @@ import File
 import Config
 import shutil
 import ExceptionManager
+
 exceptionFileName = "Directory.py"
 
 
 class DirectoryManager:
-   
-    
-    def __init__(self, environment, config):
-        self.Config=config
+
+    def __init__(self, environment):
         self.deployPackInfo = 'DeployPackInfo.log'
         self.runLog = 'Run.log'
         self.preparePaths(environment)
@@ -51,10 +50,10 @@ class DirectoryManager:
                 str(error), "move", exceptionFileName)
 
     def getScriptFolderDirectory(self, environment):
-        return Path(self.Config.getScriptFolderDirectory(environment))
+        return Path(Config.getScriptFolderDirectory(environment))
 
     def getOldFolderDirectory(self, environment):
-        oldDirectory = Path(self.Config.getOldFolderDirectory(environment))
+        oldDirectory = Path(Config.getOldFolderDirectory(environment))
         oldDirectory = oldDirectory / self.getDateWithTime()
         return oldDirectory
 
@@ -97,7 +96,7 @@ class DirectoryManager:
 
     # PreProd
     def getProdDbDeployPath(self):
-        return Path(self.Config.getProdDbDeployPath())
+        return Path(Config.getProdDbDeployPath())
 
     def copyScriptToProdDbFolder(self, file):
         self.copy(file.path, self.prodDbDeployPath)

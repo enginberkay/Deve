@@ -10,14 +10,13 @@ import datetime
 exceptionFileName = "Email.py"
 
 class Email:
-    def __init__(self, toaddr, config):
-        
-        self.fromaddr = config.getMailFrom()
+    def __init__(self, toaddr):
+        self.fromaddr = Config.getMailFrom()
         if toaddr == None:
-            self.toaddr = config.getMailTo()
+            self.toaddr = Config.getMailTo()
         else:
             self.toaddr = toaddr
-        self.password = config.getMailPassword()
+        self.password = Config.getMailPassword()
 
         self.msg = MIMEMultipart()
 

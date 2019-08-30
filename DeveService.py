@@ -10,7 +10,6 @@ import ExceptionManager
 from flask import Flask, jsonify, request
 
 app = Flask(__name__)
-config=Config.Config(sys.argv)
 
 
 def getPathModifiedDate(el):
@@ -19,18 +18,18 @@ def getPathModifiedDate(el):
 
 @app.route('/autodeploy/<string:environment>/<string:email>/<string:changesetfiles>', methods=['GET'])
 def autodeploy(environment, email, changesetfiles):
-    if config.isRequiredUserLogin() == "TRUE":
-        Auth = AuthenticationManager.AccountImpersonate(config)
+    if Config.isRequiredUserLogin() == "TRUE":
+        Auth = AuthenticationManager.AccountImpersonate()
         Auth.logonUser()
     files = []
-    spoolsFolder = Path(config.getSpoolsFolder(environment))
+    spoolsFolder = Path(Config.getSpoolsFolder(environment))
     scriptToExecute = changesetfiles.split('!')
-    directory = DirectoryManager.DirectoryManager(environment, config)
+    directory = DirectoryManager.DirectoryManager(environment)
     directory.getAllFiles(files)
     # Sort files by modified date
     files.sort(key=getPathModifiedDate)
     directory.prepareSpoolPath(files, spoolsFolder)
-    db = DbManager.Oracle(environment, config)
+    db = DbManager.Oracle(environment)
     for file in files:
         if file.name.upper() == directory.deployPackInfo.upper():
             files.remove(file)
@@ -54,7 +53,7 @@ def autodeploy(environment, email, changesetfiles):
     invalidObjectListFile = File.File(
         "InvalidObjects.log", spoolsFolder / "InvalidObjects.log")
     invalidObjectListFile.spoolPath = invalidObjectListFile.path
-    email = Email.Email(email, config)
+    email = Email.Email(email)
     for file in files:
         for scriptName in scriptToExecute:
             if scriptName == file.name:
@@ -65,7 +64,7 @@ def autodeploy(environment, email, changesetfiles):
     else:
         ExceptionManager.WriteException(
             "Could not send e-mail", "Email", "DeveService.py")
-    if config.isRequiredUserLogin() == "TRUE":
+    if Config.isRequiredUserLogin() == "TRUE":
         Auth.logoffUser()
     for file in files:
         if file.name.upper() == directory.deployPackInfo.upper():
