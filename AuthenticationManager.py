@@ -18,22 +18,18 @@ class AccountImpersonate:
             self.handel = win32security.LogonUser(
                 self.username, self.domain, self.password, win32con.LOGON32_LOGON_INTERACTIVE, win32con.LOGON32_PROVIDER_DEFAULT)
             win32security.ImpersonateLoggedOnUser(self.handel)
-        except error.Win32Exception as e:
-            ExceptionManager.WriteException(
-                e.strerror, "logonUser", exceptionFileName)
-            exit()
+            return True
         except Exception as error:
             ExceptionManager.WriteException(
                 str(error), "logonUser", exceptionFileName)
+            return False
 
     def logoffUser(self):
         try:
             win32security.RevertToSelf()
             self.handel.Close()
-        except error.Win32Exception as e:
-            ExceptionManager.WriteException(
-                e.strerror, "logoffUser", exceptionFileName)
-            exit()
+            return True
         except Exception as error:
             ExceptionManager.WriteException(
                 str(error), "logoffUser", exceptionFileName)
+            return False

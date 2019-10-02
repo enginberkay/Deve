@@ -108,3 +108,4 @@ config.ini
 
 # test
 test.py
+.vscode/settings.json
