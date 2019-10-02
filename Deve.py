@@ -18,6 +18,7 @@ if __name__ == "__main__":
     print("###### Deve #####")
     env = Config.getEnvironment()
     print(env + " Deploy Started!")
+    env = env.upper()
     files = []
     directory = DirectoryManager.DirectoryManager(env)
     directory.createDirectory(directory.OldFolder)

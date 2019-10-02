@@ -18,6 +18,7 @@ def getPathModifiedDate(el):
 
 @app.route('/autodeploy/<string:environment>/<string:email>/<string:changesetfiles>', methods=['GET'])
 def autodeploy(environment, email, changesetfiles):
+    environment = environment.upper()
     if Config.isRequiredUserLogin() == "TRUE":
         Auth = AuthenticationManager.AccountImpersonate()
         Auth.logonUser()
