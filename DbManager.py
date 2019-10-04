@@ -36,6 +36,7 @@ class Oracle:
             session.stdin.write(bytes(sqlplus, "utf-8"))
             session.stdin.write(b" SET  DEFINE  OFF; \n")
             session.stdin.write(b" SET  SQLBLANKLINES OFF; \n")
+            session.stdin.write(b" EXEC dbms_session.set_nls ('nls_date_format','''dd/mm/yyyy''') \n")
             spool = "spool " + spoolPath + "; \n"
             session.stdin.write(bytes(spool, "utf-8"))
             session.stdin.write(sqlCommand)
