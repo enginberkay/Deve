@@ -56,18 +56,3 @@ if __name__ == "__main__":
         "InvalidObjects.log", directory.OldFolder / "InvalidObjects.log")
     invalidObjectListFile.spoolPath = invalidObjectListFile.path
     files.append(invalidObjectListFile)
-
-    if Config.getMailActive() == "TRUE":
-        print("Email is preparing")
-        email = Email.Email(None)
-        for file in files:
-            if file.name.upper() == directory.deployPackInfo.upper():
-                continue
-            if file.name.upper() == directory.runLog.upper():
-                continue
-            email.attach(file)
-        if email.sendmail("Test"):
-            print("Email sent")
-        else:
-            print("Email couldn't send")
-    x = input("Please, press enter to finish...")
