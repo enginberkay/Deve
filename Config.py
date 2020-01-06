@@ -16,8 +16,6 @@ def getScriptFolderDirectory(environment):
     except Exception as error:
         ExceptionManager.WriteException(
             str(error), "getRootDirectory", exceptionFileName)
-        print(error)
-        x = input("Press enter to finish...")
         os._exit(1)
 
 
@@ -30,8 +28,6 @@ def getOldFolderDirectory(environment):
     except Exception as error:
         ExceptionManager.WriteException(
             str(error), "getOldDirectory", exceptionFileName)
-        print(error)
-        x = input("Press enter to finish...")
         os._exit(1)
 
 
@@ -48,8 +44,6 @@ def getDbConnectionString(environment):
     except Exception as error:
         ExceptionManager.WriteException(
             str(error), "getDbConnectionString", exceptionFileName)
-        print(error)
-        x = input("Press enter to finish...")
         os._exit(1)
     return str(userName + "/" + password + "@" + tnsName)
 
@@ -57,29 +51,25 @@ def getDbConnectionString(environment):
 # Preprod
 
 
-def getProdDbDeployPath():
+def getProdDbDeployPath(environment):
     try:
-        return config['DIRECTORY_PREPROD']['PRODDBDEPLOY']
+        if environment == 'TEST':
+            return config['DIRECTORY_TEST']['PRODDBDEPLOY']
+        elif environment == 'PREPROD':
+            return config['DIRECTORY_PREPROD']['PRODDBDEPLOY']
     except Exception as error:
         ExceptionManager.WriteException(
             str(error), "getProdDbDeployPath", exceptionFileName)
-        print(error)
-        x = input("Press enter to finish...")
         os._exit(1)
 # VZX
 
 
 def getSpoolsFolder(environment):
     try:
-        if environment == 'TEST':
-            return config['DIRECTORY_TEST']['SPOOLS']
-        elif environment == 'PREPROD':
-            return config['DIRECTORY_PREPROD']['SPOOLS']
+        return config['DIRECTORY_PREPROD']['SPOOLS']
     except Exception as error:
         ExceptionManager.WriteException(
             str(error), "getProdDbDeployPath", exceptionFileName)
-        print(error)
-        x = input("Press enter to finish...")
         os._exit(1)
 
 # Mail
@@ -91,8 +81,6 @@ def getMailActive():
     except Exception as error:
         ExceptionManager.WriteException(
             str(error), "getMailRequired", exceptionFileName)
-        print(error)
-        x = input("Press enter to finish...")
         os._exit(1)
 
 
@@ -102,8 +90,6 @@ def getMailFrom():
     except Exception as error:
         ExceptionManager.WriteException(
             str(error), "getMailFrom", exceptionFileName)
-        print(error)
-        x = input("Press enter to finish...")
         os._exit(1)
 
 
@@ -113,8 +99,6 @@ def getMailTo():
     except Exception as error:
         ExceptionManager.WriteException(
             str(error), "getMailTo", exceptionFileName)
-        print(error)
-        x = input("Press enter to finish...")
         os._exit(1)
 
 
@@ -124,8 +108,6 @@ def getMailPassword():
     except Exception as error:
         ExceptionManager.WriteException(
             str(error), "getMailPassword", exceptionFileName)
-        print(error)
-        x = input("Press enter to finish...")
         os._exit(1)
 
 
@@ -135,8 +117,6 @@ def getEnvironment():
     except Exception as error:
         ExceptionManager.WriteException(
             str(error), "getEnvironment", exceptionFileName)
-        print(error)
-        x = input("Press enter to finish...")
         os._exit(1)
 
 
@@ -146,16 +126,13 @@ def getWindowsUserDomain():
     except Exception as error:
         ExceptionManager.WriteException(
             str(error), "getWindowsUserDomain", exceptionFileName)
-        print(error)
-        x = input("Press enter to finish...")
         os._exit(1)
 
 
 def isRequiredUserLogin():
     try:
         return config['AUTHENTICATION']['IS_REQUIRED']
-    except Exception as error:
-        print("User Login is not required!")
+    except:
         return "FALSE"
 
 
@@ -165,8 +142,6 @@ def getWindowsUserName():
     except Exception as error:
         ExceptionManager.WriteException(
             str(error), "getWindowsUserName", exceptionFileName)
-        print(error)
-        x = input("Press enter to finish...")
         os._exit(1)
 
 
@@ -176,6 +151,4 @@ def getWindowsUserPassword():
     except Exception as error:
         ExceptionManager.WriteException(
             str(error), "getWindowsUserPassword", exceptionFileName)
-        print(error)
-        x = input("Press enter to finish...")
         os._exit(1)
