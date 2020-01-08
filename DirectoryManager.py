@@ -96,7 +96,7 @@ class DirectoryManager:
 
     # PreProd
     def getProdDbDeployPath(self):
-        return Path(Config.getProdDbDeployPath())
+        return Path(Config.getProdDbDeployPath(self.env))
 
     def copyScriptToProdDbFolder(self, file):
         self.copy(file.path, self.prodDbDeployPath)
