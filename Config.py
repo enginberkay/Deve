@@ -152,3 +152,19 @@ def getWindowsUserPassword():
         ExceptionManager.WriteException(
             str(error), "getWindowsUserPassword", exceptionFileName)
         os._exit(1)
+
+def getTfsUrl():
+    try:
+        return config['TFS']['URL']
+    except Exception as error:
+        ExceptionManager.WriteException(
+            str(error), "getTfsUrl", exceptionFileName)
+        os._exit(1)
+
+def getTfsPat():
+    try:
+        return config['TFS']['PAT']
+    except Exception as error:
+        ExceptionManager.WriteException(
+            str(error), "getTfsPat", exceptionFileName)
+        os._exit(1)

@@ -143,3 +143,6 @@ class DirectoryManager:
         except Exception as error:
             ExceptionManager.WriteException(
                 str(error), "appendDeployPackInfoTo09", exceptionFileName)
+
+def get_filename(path):
+    return Path(path).name

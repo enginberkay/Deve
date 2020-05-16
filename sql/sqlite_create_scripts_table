@@ -1,0 +1,7 @@
+
+CREATE TABLE IF NOT EXISTS scripts (
+    id integer PRIMARY KEY,
+    deploy_id integer NOT NULL,
+    script_name text NOT NULL,
+    FOREIGN KEY (deploy_id) REFERENCES deploys (id)
+);

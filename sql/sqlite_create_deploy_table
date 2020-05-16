@@ -1,0 +1,6 @@
+CREATE TABLE IF NOT EXISTS deploys (
+    id integer PRIMARY KEY,
+    start_changeset_id integer NOT NULL,
+    end_changeset_id integer NOT NULL,
+    deployment_date text
+);
