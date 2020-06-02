@@ -30,11 +30,3 @@ class HttpClient:
         response.raise_for_status()
         result = response.json()
         return result
-
-
-# resp = requests.get('https://azoreahai.vizyoneks.com.tr/tfs/DbCollection/_apis/tfvc/changesets/17940/changes')
-
-# httpClient = httpClient(None,None,'jq3cp4fpbraiyd3sgkcn2ks5lgydb23hmmgkkkezkhsakuomhqka', True)
-# resp = httpClient.send_get('https://azoreahai.vizyoneks.com.tr/tfs/DbCollection/_apis/tfvc/changesets/17940/changes', {'Content-Type': 'application/json'})
-# print(resp)
- 
