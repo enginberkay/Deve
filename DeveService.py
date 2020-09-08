@@ -1,4 +1,3 @@
-import sys
 from pathlib import Path
 import File
 import DirectoryManager
@@ -7,7 +6,7 @@ import Config
 import AuthenticationManager
 import Email
 import ExceptionManager
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify
 
 app = Flask(__name__)
 

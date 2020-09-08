@@ -3,6 +3,7 @@ from sqlite3 import Error
 
 __conn = None
 
+
 def create_connection(db_file):
     """ create a database connection to the SQLite database
         specified by db_file
@@ -31,6 +32,7 @@ def create_table(conn, create_table_sql):
     except Error as e:
         print(e)
 
+
 def get_last_changeset_id():
     try:
         cur = __conn.cursor()
@@ -45,7 +47,12 @@ def get_last_changeset_id():
         raise Exception(e)
 
 
-def insert_deploys(deploy):
+def insert_deploy(deploy: tuple):
+    """
+    DeploysTableModel nesnesinin tuple halini dbye insert eder
+    :param deploy:
+    :return:
+    """
     try:
         sql = ''' INSERT INTO deploys(start_changeset_id,end_changeset_id,deployment_date)
                 VALUES(?,?,?) '''
@@ -57,7 +64,15 @@ def insert_deploys(deploy):
         __conn.rollback()
         print(e)
 
-def insert_scripts(script):
+
+def insert_scripts(script: tuple):
+    """
+    Deploy içerisinde bulunan scriptlerin insert edilmesi sağlanır
+    ScriptsTableModel nesnesinin tuple halini insert eder
+    :type script: ScriptsTableModel
+    :param script:
+    :return:
+    """
     try:
         sql = ''' INSERT INTO scripts(deploy_id,script_name)
                 VALUES(?,?) '''
@@ -85,15 +100,15 @@ def insert_script_results(result):
 
 def __main():
     global __conn
-    database = r"pythonsqlite.db"
-    create_table_scripts = []
-    create_table_scripts.append(open("sql/sqlite_create_deploy_table", "r").read())
-    create_table_scripts.append(open("sql/sqlite_create_scripts_table", "r").read())
-    create_table_scripts.append(open("sql/sqlite_create_script_results_table", "r").read())
+    database = r"deve.db"
+    create_table_scripts = [open("sql/sqlite_create_deploy_table", "r").read(),
+                            open("sql/sqlite_create_scripts_table", "r").read(),
+                            open("sql/sqlite_create_script_results_table", "r").read()]
     __conn = create_connection(database)
     if __conn is not None:
         for val in create_table_scripts:
-           create_table(__conn, val)
+            create_table(__conn, val)
 
-if __name__ in ['__main__','SqliteManager']:
+
+if __name__ in ['__main__', 'SqliteManager']:
     __main()

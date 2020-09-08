@@ -33,9 +33,10 @@ class DirectoryManager:
     def getDateWithTime():
         return datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
 
-    def createDirectory(self, path):
+    @staticmethod
+    def createDirectory(path):
         try:
-            if not Path.exists(path):
+            if not Path.exists(Path(path)):
                 Path(path).mkdir()
         except Exception as error:
             ExceptionManager.WriteException(

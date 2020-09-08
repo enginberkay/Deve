@@ -1,8 +1,6 @@
 from Helpers.RestfulHelper import HttpClient
 from tfs import TFSAPI
-import json
 import Config
-from pathlib import Path
 import DirectoryManager
 
 
@@ -12,7 +10,7 @@ class Manager:
         pat = Config.getTfsPat()
         tfs_url = Config.getTfsUrl()
         self.restClient = HttpClient(None, None, pat, True)
-        self.tfsClient = TFSAPI(tfs_url, pat=pat, project=project)
+        self.tfsClient = TFSAPI(tfs_url, pat=pat, project=project, verify=True)
 
     def get_latest_changeset_id(self):
         changeset = self.tfsClient.get_changesets(top=1)

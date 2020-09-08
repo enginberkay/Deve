@@ -1,10 +1,9 @@
-import sys
 from pathlib import Path
 import File
 import DirectoryManager
 import DbManager
 import Config
-import Email
+
 """
 Oracle script çalıştırma uygulaması
 """

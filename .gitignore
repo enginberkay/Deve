@@ -112,3 +112,7 @@ test.py
 # IDE
 .vscode/settings.json
 .idea
+
+#Deve Stuff
+deve.db
+FatalError.txt

@@ -3,6 +3,7 @@ import datetime
 
 
 def WriteException(exceptionMessage, caller, pyFile):
+    raise Exception(exceptionMessage)
     fatalErrotPath = Path("./FatalError.txt")
     dateTime = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
     errorData = dateTime + " | " + caller + \

@@ -8,10 +8,23 @@ exceptionFileName = "SQLPlus.py"
 
 
 class Oracle:
-    def __init__(self, environtment):
-        self.__connectString = Config.getDbConnectionString(environtment)
+    """
+    Oracle Database Yönetimini Sağlar
+
+    Db bağlantılarını ve execution işlemlerini sağlayacak olan pakettir.
+    constructor metod environment parametresi alır.
+    Hangi dbde işlem yapılacağı bilgisidir.
+    """
+    def __init__(self, environment):
+        self.__connectString = Config.getDbConnectionString(environment)
 
     def runScriptFiles(self, file):
+        """
+        Verilen scripti db üzerinde execute eder
+
+        :param file:
+        :return:
+        """
         try:
             sqlCommand = b"@" + bytes(file.path)
         except Exception as error:
